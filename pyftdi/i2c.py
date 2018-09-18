@@ -39,6 +39,11 @@ from pyftdi.ftdi import Ftdi, FtdiFeatureError
 
 __all__ = ['I2cPort', 'I2cController']
 
+try:
+    TimeoutError
+except NameError:
+    TimeoutError = Exception
+
 
 class I2cIOError(IOError):
     """I2c I/O error"""

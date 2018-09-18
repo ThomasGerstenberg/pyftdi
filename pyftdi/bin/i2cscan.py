@@ -41,7 +41,7 @@ class I2cBusScanner(object):
 
     def scan(self):
         """Open an I2c connection to a slave"""
-        url = environ.get('FTDI_DEVICE', 'ftdi://ftdi:2232h/1')
+        url = environ.get('FTDI_DEVICE', 'ftdi://ftdi:4232h/2')
         i2c = I2cController()
         slaves = []
         getLogger('pyftdi.i2c').setLevel(ERROR)
@@ -59,12 +59,12 @@ class I2cBusScanner(object):
             i2c.terminate()
         columns = 16
         row = 0
-        print('   %s' % ''.join(' %01X ' % col for col in range(columns)))
+        print('   {}'.format(''.join(' {:01X} '.format(col) for col in range(columns))))
         while True:
             chunk = slaves[row:row+columns]
             if not chunk:
                 break
-            print(' %1X:' % (row//columns), '  '.join(chunk))
+            print(' {:1X}  {}'.format(row//columns, '  '.join(chunk)))
             row += columns
 
 
@@ -74,7 +74,4 @@ def main():
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as exc:
-        print(str(exc), file=stderr)
+    main()
