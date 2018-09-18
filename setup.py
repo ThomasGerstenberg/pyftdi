@@ -21,6 +21,7 @@
 import codecs
 import os
 import re
+import sys
 
 from setuptools import find_packages, setup
 
@@ -38,7 +39,6 @@ CLASSIFIERS = [
     'Lesser General Public License (LGPL)',
     'Operating System :: MacOS :: MacOS X',
     'Operating System :: POSIX',
-    'Programming Language :: Python :: 3.5',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: System :: Hardware :: Hardware Drivers',
 ]
@@ -46,6 +46,9 @@ INSTALL_REQUIRES = [
     'pyusb >= 1.0.0',
     'pyserial >= 3.0',
 ]
+
+if sys.version_info[0] == 2:
+    INSTALL_REQUIRES.append("funcsigs")
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -97,5 +100,4 @@ if __name__ == '__main__':
                       'pyftdi.serialext': ['*.rst', 'doc/api/uart.rst']},
         classifiers=CLASSIFIERS,
         install_requires=INSTALL_REQUIRES,
-        python_requires='>=3.5',
     )

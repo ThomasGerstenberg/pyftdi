@@ -16,12 +16,16 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from __future__ import print_function
 import threading
 import usb.core
 import usb.util
 from string import printable as printablechars
 from sys import platform, stdout
-from urllib.parse import urlsplit
+try:
+    from urllib.parse import urlsplit
+except ImportError:
+    from urlparse import urlsplit
 from .misc import to_int
 
 __all__ = ['UsbTools']
@@ -489,9 +493,14 @@ class UsbTools:
            :rtype: str
         """
         if cls.UsbApi is None:
-            import inspect
-            args, varargs, varkw, defaults = \
-                inspect.signature(usb.core.Device.read).parameters
+            try:
+                import inspect
+                args, varargs, varkw, defaults = \
+                    inspect.signature(usb.core.Device.read).parameters
+            except AttributeError:
+                import funcsigs
+                args, varargs, varkw, defaults = funcsigs.signature(usb.core.Device.read).parameters
+
             if (len(args) >= 3) and args[1] == 'length':
                 cls.UsbApi = 1
             else:

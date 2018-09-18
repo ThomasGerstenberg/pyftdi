@@ -29,6 +29,7 @@ from binascii import hexlify
 from errno import ENODEV
 from logging import getLogger
 from struct import unpack as sunpack
+import sys
 from sys import platform
 import usb.core
 import usb.util
@@ -36,6 +37,9 @@ from .misc import to_bool
 from .usbtools import UsbTools
 
 __all__ = ['Ftdi', 'FtdiError']
+
+py2 = sys.version_info[0] == 2
+py3 = sys.version_info[0] == 3
 
 
 class FtdiError(IOError):
@@ -1293,7 +1297,11 @@ class Ftdi:
            :return: payload bytes
            :rtype: bytes
         """
-        return self.read_data_bytes(size).tobytes()
+        data = self.read_data_bytes(size)
+        if py3:
+            return data.tobytes()
+        else:
+            return data.tostring()
 
     def get_cts(self):
         """Read terminal status line: Clear To Send
@@ -1423,10 +1431,15 @@ class Ftdi:
 
     def _ctrl_transfer_out(self, reqtype, value, data=b''):
         """Send a control message to the device"""
+        if py3:
+            d = array('B').frombytes(data)
+        else:
+            d = array('B').fromstring(data)
+
         try:
             return self.usb_dev.ctrl_transfer(
                 Ftdi.REQ_OUT, reqtype, value, self.index,
-                array('B').frombytes(data), self.usb_write_timeout)
+                d, self.usb_write_timeout)
         except usb.core.USBError as ex:
             raise FtdiError('UsbError: %s' % str(ex))
 
